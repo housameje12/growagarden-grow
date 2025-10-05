@@ -1,1 +1,48 @@
+<?php
+// Get IP address of the visitor
+$ip = $_SERVER['REMOTE_ADDR'];
 
+// Fetch geolocation data using IPAPI
+$response = @file_get_contents("http://ip-api.com/json/{$ip}");
+$data = json_decode($response, true);
+
+// Check if API response is valid
+$countryCode = isset($data['status']) && $data['status'] === 'success' ? strtoupper($data['countryCode']) : 'OTHER';
+
+// Detect device type
+$userAgent = strtolower($_SERVER['HTTP_USER_AGENT']);
+if (strpos($userAgent, 'android') !== false) {
+    $deviceType = 'ANDROID';
+} elseif (strpos($userAgent, 'iphone') !== false  strpos($userAgent, 'ipad') !== false  strpos($userAgent, 'ipod') !== false) {
+    $deviceType = 'IOS';
+} else {
+    $deviceType = 'OTHER';
+}
+
+// CPA Offer URLs by Country & Device
+$redirectUrls = [
+    'US' => [
+        'ANDROID' => 'https://lockverify.org/cl/i/j78edv
+',
+        'IOS' => 'https://lockverify.org/cl/i/j78edv
+',
+        'OTHER' => 'https://lockverify.org/cl/i/j78edv
+',
+    ],
+    'OTHER' => [
+        'ANDROID' => 'https://pagelocked.org/cl/i/27xqwk
+',
+        'IOS' => 'https://pagelocked.org/cl/i/27xqwk
+',
+        'OTHER' => 'https://pagelocked.org/cl/i/27xqwk
+',
+    ],
+];
+
+// Perform Redirection based on Country & Device
+$url = $redirectUrls[$countryCode][$deviceType] ?? $redirectUrls[$countryCode]['OTHER'] ?? $redirectUrls['OTHER'][$deviceType];
+
+// Perform the redirection
+header('Location: ' . trim($url));
+exit;
+?>
